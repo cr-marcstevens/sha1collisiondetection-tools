@@ -1,0 +1,78 @@
+ARCH=$(shell arch)
+ifeq ($(ARCH),armv7l)
+TARGET ?= rpi2
+endif
+TARGET ?= x86
+
+CXX ?= g++
+
+CXXFLAGS  ?= -O2 -g
+CXXFLAGS  += -I ../../lib
+LINKFLAGS += -L ../../bin/.libs
+ifdef GCCLOCAL
+CXXFLAGS  += -I ${GCCLOCAL}/include
+LINKFLAGS += -L ${GCCLOCAL}/lib
+endif
+
+HAVEMMX=0
+HAVESSE=0
+HAVEAVX=0
+HAVENEON=0
+
+ifeq ($(TARGET),rpi2)
+HAVENEON=1
+TARGETCFLAGS ?= -mfpu=neon -std=c++0x
+endif
+
+ifeq ($(TARGET),x86)
+HAVEMMX=1
+HAVESSE=1
+HAVEAVX=1
+TARGETCFLAGS ?= -march=native -std=c++11
+endif
+
+ifeq ($(HAVEMMX),1)
+MMXFLAGS=-mmmx
+SIMDCONFIG+= -DHAVE_MMX
+else
+SIMDCONFIG+= -DNO_HAVE_MMX
+endif
+
+ifeq ($(HAVESSE),1)
+SSEFLAGS=-msse -msse2
+SIMDCONFIG+= -DHAVE_SSE
+else
+SIMDCONFIG+= -DNO_HAVE_SSE
+endif
+
+ifeq ($(HAVEAVX),1)
+AVXFLAGS=-mavx -mavx2
+SIMDCONFIG+= -DHAVE_AVX
+else
+SIMDCONFIG+= -DNO_HAVE_AVX
+endif
+
+ifeq ($(HAVENEON),1)
+NEONFLAGS=-mfpu=neon
+SIMDCONFIG+= -DHAVE_NEON
+else
+SIMDCONFIG+= -DNO_HAVE_NEON
+endif
+
+CXXFLAGS+= $(SIMDCONFIG) $(TARGETCFLAGS)
+LINKFLAGS+= $(TARGETCFLAGS)
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -I. -I.. -c $<
+
+%_mmx64.o: %_mmx64.cpp
+	$(CXX) $(CXXFLAGS) $(MMXFLAGS) -I. -I.. -c $<
+
+%_sse128.o: %_sse128.cpp
+	$(CXX) $(CXXFLAGS) $(SSEFLAGS) -I. -I.. -c $<
+
+%_avx256.o: %_avx256.cpp
+	$(CXX) $(CXXFLAGS) $(AVXFLAGS) -I. -I.. -c $<
+
+%_neon128.o: %_neon128.cpp
+	$(CXX) $(CXXFLAGS) $(NEONFLAGS) -I. -I.. -c $<
