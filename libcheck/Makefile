@@ -2,8 +2,8 @@ include ../Makefile.local
 
 DEST            = ./libcheck
 
-OBJECTS         = main.o 
-LIBS            = -ldetectcoll -lboost_filesystem -lboost_program_options -lboost_system -lboost_serialization -lboost_iostreams -lboost_random
+OBJECTS         = main.o ../ubc_check_verify.o
+LIBS            = -lsha1detectcoll -lboost_filesystem -lboost_program_options -lboost_system -lboost_serialization -lboost_iostreams -lboost_random
 MKPROPER	= *~
 
 all: $(DEST)
@@ -19,7 +19,10 @@ proper: clean
 	rm -f -r ./.tmp
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) -I. -I.. -c $<
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+%.o: %.c
+	$(CC) $(CCFLAGS) -c $< -o $@
 	
 $(DEST): $(OBJECTS)
 	$(CXX) $(LINKFLAGS) -o $(DEST) $(OBJECTS)  $(LIBS) $(LIBS)

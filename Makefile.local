@@ -5,10 +5,13 @@ endif
 TARGET ?= x86
 
 CXX ?= g++
+CC ?= gcc
 
+CCFLAGS ?= -O2 -g
+CCFLAGS  += -I ../../sha1collisiondetection/lib
 CXXFLAGS  ?= -O2 -g
-CXXFLAGS  += -I ../../lib
-LINKFLAGS += -L ../../bin/.libs
+CXXFLAGS  += -I ../../sha1collisiondetection/lib
+LINKFLAGS += -L ../../sha1collisiondetection/bin -L ../../sha1collisiondetection/bin/.libs -static
 ifdef GCCLOCAL
 CXXFLAGS  += -I ${GCCLOCAL}/include
 LINKFLAGS += -L ${GCCLOCAL}/lib
@@ -21,14 +24,16 @@ HAVENEON=0
 
 ifeq ($(TARGET),rpi2)
 HAVENEON=1
-TARGETCFLAGS ?= -mfpu=neon -std=c++0x
+TARGETCFLAGS ?= -mfpu=neon
+TARGETCXXFLAGS ?= -mfpu=neon -std=c++0x
 endif
 
 ifeq ($(TARGET),x86)
 HAVEMMX=1
 HAVESSE=1
 HAVEAVX=1
-TARGETCFLAGS ?= -march=native -std=c++11
+TARGETCFLAGS ?= -march=native
+TARGETCXXFLAGS ?= -march=native -std=c++11
 endif
 
 ifeq ($(HAVEMMX),1)
@@ -59,7 +64,8 @@ else
 SIMDCONFIG+= -DNO_HAVE_NEON
 endif
 
-CXXFLAGS+= $(SIMDCONFIG) $(TARGETCFLAGS)
+CCFLAGS += $(SIMDCONFIG) $(TARGETCFLAGS)
+CXXFLAGS+= $(SIMDCONFIG) $(TARGETCXXFLAGS)
 LINKFLAGS+= $(TARGETCFLAGS)
 
 %.o: %.cpp
