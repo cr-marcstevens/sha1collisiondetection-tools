@@ -67,6 +67,7 @@ int HashRandomBytes(
 
 }
 
+/*
 int UBCVerifyRandomBytes(
 	size_t			cntBytesToHash,
 	unsigned int	uiSeed)
@@ -109,3 +110,4 @@ int UBCVerifyRandomBytes(
 
 	return 0;
 }
+ */

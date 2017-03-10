@@ -1,6 +1,6 @@
 include ../Makefile.local
 
-DEST            = ./bin
+DEST            = perftest
 
 OBJECTS         = main.o random_hashing.o
 LIBS            = -lsha1detectcoll -lboost_program_options -lboost_system -lboost_timer -lboost_chrono
