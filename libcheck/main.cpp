@@ -54,7 +54,29 @@ extern "C"
 		int bigendian;
 	} SHA1reg_CTX;
 
-	void swap_bytes(uint32_t val[16]);
+	#define LE32_TO_BE32(X) \
+		{X = ((X << 8) & 0xFF00FF00) | ((X >> 8) & 0xFF00FF); X = (X << 16) | (X >> 16);}
+
+	void swap_bytes(uint32_t val[16])
+	{
+		LE32_TO_BE32(val[0]);
+        	LE32_TO_BE32(val[1]);
+	        LE32_TO_BE32(val[2]);
+        	LE32_TO_BE32(val[3]);
+        	LE32_TO_BE32(val[4]);
+        	LE32_TO_BE32(val[5]);
+        	LE32_TO_BE32(val[6]);
+        	LE32_TO_BE32(val[7]);
+        	LE32_TO_BE32(val[8]);
+        	LE32_TO_BE32(val[9]);
+        	LE32_TO_BE32(val[10]);
+        	LE32_TO_BE32(val[11]);
+        	LE32_TO_BE32(val[12]);
+        	LE32_TO_BE32(val[13]);
+        	LE32_TO_BE32(val[14]);
+        	LE32_TO_BE32(val[15]);
+	}
+
 
 #define Rotate_right(x,n) (((x)>>(n))|((x)<<(32-(n))))
 #define Rotate_left(x,n)  (((x)<<(n))|((x)>>(32-(n))))
